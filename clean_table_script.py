@@ -80,7 +80,7 @@ rich_symptoms_map = rich_symptoms[(rich_symptoms.date_clean>=rich_symptoms.start
 rich_symptoms_map = rich_symptoms_map.assign(
     day_of_cycle=rich_symptoms_map.apply(lambda x: (x['date_clean'] - x['start_date']).days, axis=1))
 
-symptom_df_clean_full = pd.merge(symptom_df_clean, rich_symptoms_map,
+symptom_df_clean_full = pd.merge(symptom_df_clean[['user_id', 'date_clean', 'id']], rich_symptoms_map,
                                  left_on=['user_id', 'date_clean', 'id'],
                                  right_on=['user_id', 'date_clean', 'id_x'],
                                  how='left')
