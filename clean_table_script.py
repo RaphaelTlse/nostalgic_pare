@@ -2,16 +2,13 @@
 # -*- coding:utf-8 -*-
 
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
 import numpy as np
+
 pd.options.display.max_columns = 999
 
-# read data
-user_df = pd.read_csv('data/User.csv')
-symptom_df = pd.read_csv('data/Symptom.csv')
-period_df = pd.read_csv('data/Period.csv')
 
-
+# cleaning functions
 def clean_date(x):
     try:
         return datetime.strptime(x, "%d/%m/%y")
@@ -27,8 +24,41 @@ def clean_df_date(df, colname):
     return df_clean
 
 
-### clean period_df
+def calculate_age(row):
+    today = date.today()
+    born = row["dob"]
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+
+# ### Read data ###
+
+user_df = pd.read_csv('data/User.csv')
+symptom_df = pd.read_csv('data/Symptom.csv')
+period_df = pd.read_csv('data/Period.csv')
+
+# ### Clean user_df ###
+
+# get unique user id
+unique_users = list(set(user_df["id"]))
+active_users = list(set(period_df["User_id"]))
+symptom_users = list(set(symptom_df["user_id"]))
+
+# remove inactive users
+query = "id in {0}".format(str(active_users))
+user_df_clean = user_df.query(query)
+
+# create age feature and format dates
+user_df_clean.loc[:, "dob"].fillna(value="01/01/25", inplace=True)
+user_df_clean.loc[:, "dob"] = user_df_clean.loc[:, "dob"].apply(lambda x: clean_date(x))
+user_df_clean.loc[:, "age"] = user_df_clean.apply(calculate_age, axis=1)
+user_df_clean.replace(to_replace=clean_date("01/01/25"), value=pd.NaT, inplace=True)
+user_df_clean.loc[user_df_clean.age < 0, 'age'] = np.nan
+
+
+# ### Clean period_df ###
+
 period_df_nona = period_df.dropna()
+
 # fix wrong format of date
 period_df_nona_clean = period_df_nona[~period_df_nona.start_date.str.contains('-')]
 period_df_nona_clean = period_df_nona_clean.assign(
@@ -37,10 +67,12 @@ period_df_nona_clean = period_df_nona_clean.assign(
 period_df_nona_clean = period_df_nona_clean.assign(
     end_date_clean=period_df_nona_clean.end_date
     .apply(lambda x: datetime.strptime(x, '%d/%m/%y')))
+
 # get end of cycle date
 cycle_table = pd.merge(period_df_nona_clean, period_df_nona_clean,
                        on='User_id')
 cycle_table_filter = cycle_table[(cycle_table.start_date_clean_y > cycle_table.end_date_clean_x)]
+
 # keep only the most relevant possible cycle
 cycle_table_filter_2 = cycle_table_filter\
     .sort_values(by=['start_date_clean_x', 'start_date_clean_y'])\
@@ -67,27 +99,43 @@ rich_period_df_clean = rich_period_df__.copy()
 rich_period_df_clean.loc[rich_period_df_clean.cycle_length>40, 'cycle_length'] = np.nan
 rich_period_df_clean.to_csv('data/clean_period.csv', index=False)
 
-# attempt to complete missing data
-# TODO - pas urgent
+# ### Clean symptom_df ###
 
-### clean symptom_df
 symptom_df_clean = symptom_df[~symptom_df.date.str.contains('-')]
-symptom_df_clean = symptom_df_clean.assign(date_clean=
-    symptom_df_clean.date.apply(func=lambda x: datetime.strptime(x, '%d/%m/%y')))
+symptom_df_clean = symptom_df_clean.assign(
+    date_clean=symptom_df_clean.date.apply(func=lambda x: datetime.strptime(x, '%d/%m/%y')))
 rich_symptoms = pd.merge(symptom_df_clean, rich_period_df_clean, left_on='user_id', right_on='User_id')
 rich_symptoms_map = rich_symptoms[(rich_symptoms.date_clean>=rich_symptoms.start_date)&
                                   (rich_symptoms.date_clean<=rich_symptoms.end_cycle)]
 rich_symptoms_map = rich_symptoms_map.assign(
     day_of_cycle=rich_symptoms_map.apply(lambda x: (x['date_clean'] - x['start_date']).days, axis=1))
 
-symptom_df_clean_full = pd.merge(symptom_df_clean, rich_symptoms_map,
-                                 left_on=['user_id', 'date_clean', 'id'],
-                                 right_on=['user_id', 'date_clean', 'id_x'],
-                                 how='left')
+# ### Merge data ###
+
+# merging
+symptom_df_clean_full = pd.merge(symptom_df_clean, rich_symptoms_map[
+    ["user_id", "date_clean", "id_x", "start_date", "end_date", "cycle_length", "end_cycle", "day_of_cycle"]],
+                                 left_on=["user_id", "date_clean", "id"],
+                                 right_on=["user_id", "date_clean", "id_x"],
+                                 how="left")
 symptom_df_clean_full_uni = symptom_df_clean_full\
     .sort_values(by=['id', 'cycle_length'])\
     .drop_duplicates(subset=['id'], keep='last')
-symptom_df_clean_full_uni.to_csv('data/clean_symptom.csv', index=False)
+df_final = pd.merge(symptom_df_clean_full_uni, user_df_clean,
+                    left_on="user_id",
+                    right_on="id",
+                    how="left")
 
+# drop useless features
+df_final = df_final[['user_id', 'acne', 'backache', 'bloating', 'cramp', 'diarrhea',
+                     'dizzy', 'headache', 'mood', 'nausea', 'sore', 'date_clean',
+                     'start_date', 'end_date', 'cycle_length', 'end_cycle',
+                     'day_of_cycle', 'dob', 'cycle_length_initial',
+                     'period_length_initial', 'age']]
 
+# add id_cycle
+df_final.assign(id_cycle=df_final.index.to_series().groupby(
+        [df_final.user_id, df_final.start_date, df_final.end_cycle]).transform('first'))
 
+# save data
+df_final.to_csv('data/df_final.csv', index=False)
