@@ -1,5 +1,5 @@
 # Data
-Three csv files from :
+Three csv files:
 - Period.csv
 - Symptom.csv
 - User.csv
