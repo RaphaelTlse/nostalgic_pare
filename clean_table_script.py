@@ -118,6 +118,7 @@ symptom_df_clean_full = pd.merge(symptom_df_clean, rich_symptoms_map[
                                  left_on=["user_id", "date_clean", "id"],
                                  right_on=["user_id", "date_clean", "id_x"],
                                  how="left")
+
 symptom_df_clean_full_uni = symptom_df_clean_full\
     .sort_values(by=['id', 'cycle_length'])\
     .drop_duplicates(subset=['id'], keep='last')
