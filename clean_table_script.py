@@ -2,16 +2,14 @@
 # -*- coding:utf-8 -*-
 
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from datetime import datetime
 import numpy as np
 pd.options.display.max_columns = 999
 
 # read data
-user_df = pd.read_csv('User.csv')
-symptom_df = pd.read_csv('Symptom.csv')
-period_df = pd.read_csv('Period.csv')
+user_df = pd.read_csv('data/User.csv')
+symptom_df = pd.read_csv('data/Symptom.csv')
+period_df = pd.read_csv('data/Period.csv')
 
 
 def clean_date(x):
