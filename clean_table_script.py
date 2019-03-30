@@ -68,10 +68,26 @@ rich_period_df_clean.loc[rich_period_df_clean.cycle_length>40, 'cycle_length'] =
 rich_period_df_clean.to_csv('data/clean_period.csv', index=False)
 
 # attempt to complete missing data
-
-
-
+# TODO - pas urgent
 
 ### clean symptom_df
 symptom_df_clean = symptom_df[~symptom_df.date.str.contains('-')]
-symptom_df_clean = symptom_df_clean.assign(date_clean=symptom_df_clean.date.apply(func=lambda x: datetime.strptime(x, '%d/%m/%y')))
+symptom_df_clean = symptom_df_clean.assign(date_clean=
+    symptom_df_clean.date.apply(func=lambda x: datetime.strptime(x, '%d/%m/%y')))
+rich_symptoms = pd.merge(symptom_df_clean, rich_period_df_clean, left_on='user_id', right_on='User_id')
+rich_symptoms_map = rich_symptoms[(rich_symptoms.date_clean>=rich_symptoms.start_date)&
+                                  (rich_symptoms.date_clean<=rich_symptoms.end_cycle)]
+rich_symptoms_map = rich_symptoms_map.assign(
+    day_of_cycle=rich_symptoms_map.apply(lambda x: (x['date_clean'] - x['start_date']).days, axis=1))
+
+symptom_df_clean_full = pd.merge(symptom_df_clean, rich_symptoms_map,
+                                 left_on=['user_id', 'date_clean', 'id'],
+                                 right_on=['user_id', 'date_clean', 'id_x'],
+                                 how='left')
+symptom_df_clean_full_uni = symptom_df_clean_full\
+    .sort_values(by=['id', 'cycle_length'])\
+    .drop_duplicates(subset=['id'], keep='last')
+symptom_df_clean_full_uni.to_csv('data/clean_symptom.csv', index=False)
+
+
+
