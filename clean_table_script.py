@@ -97,6 +97,8 @@ rich_period_df_ = clean_df_date(rich_period_df, 'start_date')
 rich_period_df__ = clean_df_date(rich_period_df_, 'end_date')
 rich_period_df_clean = rich_period_df__.copy()
 rich_period_df_clean.loc[rich_period_df_clean.cycle_length>40, 'cycle_length'] = np.nan
+cols_to_keep = ['start_date', 'end_date', 'User_id', 'cycle_length', 'end_cycle']
+rich_period_df_clean = rich_period_df_clean[cols_to_keep]
 rich_period_df_clean.to_csv('data/clean_period.csv', index=False)
 
 # ### Clean symptom_df ###
