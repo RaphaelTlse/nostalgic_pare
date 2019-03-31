@@ -3,17 +3,17 @@ Project made during the 2019 School of AI Health Hackathon
 
 ## Tagline
 
-Enhanced and personnalized user experience in PSLove, with additional AI-powered diagnostic hints. 
+Enhanced and personalized user experience in PSLove, with additional AI-powered diagnostic hints. 
 
 ## Summary Paragraph
 
 We chose to work with the menstruation dataset because it is a phenomenon concerning half of the global population and still a taboo in many families. 
 
-Our project improves the architecture of the application PSLove in order to target more accurately the needs and the profile of the users. New fonctionalities are offered to enhance the data acquisition in terms of quality and volume. The goal is also to improve and personalize the user experience through a friendly interface and relevant feedbacks. This interface is designed to ease the processing of the data and feed our AI algorithms, allowing insights and personalized recommendations. Because of such improvements, a user could now receive notifications in case of endometriosis suspiscion and pregnancy. Plus, an accurate profiling based on their declarations allows a comparison between their cycle and their symptoms. We hope this project could be a step toward a better health and body monitoring and increase communication and knowledge about menstruations. 
+Our project improves the architecture of the application PSLove in order to target more accurately the needs and the profile of the users. New functionalities are offered to enhance the data acquisition in terms of quality and volume. The goal is also to improve and personalize the user experience through a friendly interface and relevant feedbacks. This interface is designed to ease the processing of the data and feed our AI algorithms, allowing insights and personalized recommendations. Because of such improvements, a user could now receive notifications in case of endometriosis suspicion and pregnancy. Plus, an accurate profiling based on their declarations allows a comparison between their cycle and their symptoms. We hope this project could be a step toward a better health and body monitoring and increase communication and knowledge about menstruations. 
 
 ## Link to the one page article
 
-LINK : https://github.com/remiconnesson/sleepy_banach/blob/master/One%20Page%20Article.md
+LINK : https://docs.google.com/document/d/1ZYP-xdUJkThKZTFd4LNNbtNSkVbOGyE6Zy90uuW763I/edit?usp=sharing
 
 ## Link to a demonstration video
 
@@ -25,7 +25,7 @@ python version Python 3.5.1, and other dependancies are listed in the ```require
 
 ### Achievements
 #### Improved user interface
-We have proposed a new enhanced user interface, leveraging the user's goals in data collection for a personnalized experience, and have hints to offer personnalized advanced insights, like early pregnancy detection, symptoms anomaly, and endometriosis suspecions
+We have proposed a new enhanced user interface, leveraging the user's goals in data collection for a personalized experience, and have hints to offer personalized advanced insights, like early pregnancy detection, symptoms anomaly, and endometriosis suspicions
 
 ![alt text](image/mockup_iphone.png){:height="300px" width="200px"}
 
