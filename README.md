@@ -1,6 +1,24 @@
 # nostalgic_pare
 Project made during the 2019 School of AI Health Hackathon
 
+## [MANDATORY] Tagline
+
+Enhanced and personnalized user experience in PSLove, with additional AI-powered diagnostic hints. 
+
+## [MANDATORY] Summary Paragraph
+
+The enhances-PSLove project improves knowledge
+
+A one paragraph summary of your project. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris a turpis ac ipsum lacinia sollicitudin sit amet et sapien. Vivamus vehicula consectetur convallis. Sed rutrum posuere eros, posuere scelerisque massa molestie ut. Duis orci lorem, congue condimentum pulvinar a, imperdiet sit amet odio. Phasellus condimentum sit amet lorem vitae ultricies. Donec eget rhoncus felis. Sed euismod eleifend varius. Fusce vel eros elit. Aliquam a lorem sit amet dolor mollis pellentesque eu quis ipsum. Fusce placerat imperdiet luctus. Aenean et ante nisi. Nunc mauris magna, tristique in ligula vitae, efficitur mollis nisl.
+
+## [MANDATORY] Link to the one page article
+
+You must write a one page (or more) article detailing your approach, what are you trying to solve, how your results can help make a difference.
+
+Provide a link, it must be a file in your submission github repo: (Markdown or PDF) 
+
+LINK : https://github.com/remiconnesson/sleepy_banach/blob/master/One%20Page%20Article.md
+
 ### setup instructions
 data should be put in a data folder at the root of the project
 python version Python 3.5.1, and other dependancies are listed in the ```requirements.txt``` file
