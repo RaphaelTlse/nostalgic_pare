@@ -111,34 +111,59 @@ rich_symptoms_map = rich_symptoms[(rich_symptoms.date_clean>=rich_symptoms.start
                                   (rich_symptoms.date_clean<=rich_symptoms.end_cycle)]
 rich_symptoms_map = rich_symptoms_map.assign(
     day_of_cycle=rich_symptoms_map.apply(lambda x: (x['date_clean'] - x['start_date']).days, axis=1))
+rich_symptoms_map = rich_symptoms_map[['id', 'user_id', 'date_clean',
+                                       'start_date', 'end_date',
+                                       'cycle_length', 'end_cycle', 'day_of_cycle']]
 
 # ### Merge data ###
 
-# merging
-symptom_df_clean_full = pd.merge(symptom_df_clean, rich_symptoms_map[
-    ["user_id", "date_clean", "id_x", "start_date", "end_date", "cycle_length", "end_cycle", "day_of_cycle"]],
+# merging symptoms
+symptom_df_clean_full = pd.merge(symptom_df_clean, rich_symptoms_map,
                                  left_on=["user_id", "date_clean", "id"],
-                                 right_on=["user_id", "date_clean", "id_x"],
+                                 right_on=["user_id", "date_clean", "id"],
                                  how="left")
-
+symptom_df_clean_full = symptom_df_clean_full[['id', 'user_id', 'acne', 'backache', 'bloating', 'cramp', 'diarrhea',
+                                               'dizzy', 'headache', 'mood', 'nausea', 'sore', 'date_clean',
+                                               'start_date', 'end_date', 'cycle_length', 'end_cycle', 'day_of_cycle']]
 symptom_df_clean_full_uni = symptom_df_clean_full\
     .sort_values(by=['id', 'cycle_length'])\
     .drop_duplicates(subset=['id'], keep='last')
+symptom_df_clean_full_uni.to_csv('data/clean_symptom.csv', index=False)
+
+# merging users
 df_final = pd.merge(symptom_df_clean_full_uni, user_df_clean,
                     left_on="user_id",
                     right_on="id",
                     how="left")
 
 # drop useless features
+df_final["symptom_id"] = df_final["id_x"]
 df_final = df_final[['user_id', 'acne', 'backache', 'bloating', 'cramp', 'diarrhea',
                      'dizzy', 'headache', 'mood', 'nausea', 'sore', 'date_clean',
                      'start_date', 'end_date', 'cycle_length', 'end_cycle',
                      'day_of_cycle', 'dob', 'cycle_length_initial',
-                     'period_length_initial', 'age']]
+                     'period_length_initial', 'age', "symptom_id"]]
 
 # add id_cycle
-df_final.assign(id_cycle=df_final.index.to_series().groupby(
-        [df_final.user_id, df_final.start_date, df_final.end_cycle]).transform('first'))
+df_final = df_final.sort_values(["user_id", "start_date", "end_cycle"])
+df_final.reset_index(inplace=True, drop=True)
+cycle_id = []
+cycles = []
+d_cycles = {}
+for i in df_final.index:
+    user = df_final.loc[i, 'user_id']
+    start = df_final.loc[i, 'start_date']
+    end = df_final.loc[i, 'end_cycle']
+    if pd.isnull(start) or pd.isnull(end):
+        cycle_id.append(np.nan)
+    elif str((user, start, end)) in cycles:
+        cycle_id.append(d_cycles[str((user, start, end))])
+    else:
+        cycle_id.append(i)
+        d_cycles[str((user, start, end))] = i
+        cycles.append(str((user, start, end)))
+        i += 1
+df_final.loc[:, "cycle_id"] = cycle_id
 
 # save data
 df_final.to_csv('data/df_final.csv', index=False)
