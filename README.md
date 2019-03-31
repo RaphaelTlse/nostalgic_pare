@@ -13,7 +13,7 @@ Our project improves the architecture of the application PSLove in order to targ
 
 ## Link to the one page article
 
-LINK : https://docs.google.com/document/d/1ZYP-xdUJkThKZTFd4LNNbtNSkVbOGyE6Zy90uuW763I/edit?usp=sharing
+LINK : https://github.com/loljambe/nostalgic_pare/blob/master/Nostalgic_pare.pdf
 
 ## Link to a demonstration video
 
